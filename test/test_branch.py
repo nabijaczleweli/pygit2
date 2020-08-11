@@ -139,11 +139,17 @@ def test_branches_with_commit(testrepo):
 def test_lookup_branch_local(testrepo):
     branch = testrepo.lookup_branch('master')
     assert branch.target.hex == LAST_COMMIT
+    branch = testrepo.lookup_branch(b'master')
+    assert branch.target.hex == LAST_COMMIT
 
     branch = testrepo.lookup_branch('i18n', pygit2.GIT_BRANCH_LOCAL)
     assert branch.target.hex == I18N_LAST_COMMIT
+    branch = testrepo.lookup_branch(b'i18n', pygit2.GIT_BRANCH_LOCAL)
+    assert branch.target.hex == I18N_LAST_COMMIT
 
     assert testrepo.lookup_branch('not-exists') is None
+    assert testrepo.lookup_branch(b'not-exists') is None
+    assert testrepo.lookup_branch(b'\xb1') is None
 
 def test_listall_branches(testrepo):
     branches = sorted(testrepo.listall_branches())
@@ -155,6 +161,8 @@ def test_create_branch(testrepo):
     refs = testrepo.listall_branches()
     assert 'version1' in refs
     reference = testrepo.lookup_branch('version1')
+    assert reference.target.hex == LAST_COMMIT
+    reference = testrepo.lookup_branch(b'version1')
     assert reference.target.hex == LAST_COMMIT
 
     # try to create existing reference
